@@ -1,7 +1,7 @@
 // Monetag Telegram Mini App SDK (Zone: 12280333)
 (function() {
   var s = document.createElement("script");
-  s.src = "https://libtl.com";
+   s.src = "https://libtl.com";
   s.setAttribute("data-zone", "12280333");
   s.setAttribute("data-sdk", "show_12280333");
   s.async = true;
