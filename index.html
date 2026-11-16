@@ -58,7 +58,7 @@
       </div>
       <div class="card">
         <div class="card-title">💱 আজকের ডলার ও বাজার দর</div>
-        <div class="rate-grid" id="ratesBox">
+        <div class="rate-grid">
           <div class="rate-box"><small>🇺🇸 USD</small><strong>৳ 119.50</strong></div>
           <div class="rate-box"><small>🇸🇦 SAR</small><strong>৳ 31.85</strong></div>
           <div class="rate-box"><small>🇲🇾 MYR</small><strong>৳ 26.90</strong></div>
@@ -128,9 +128,9 @@
     <div class="nav-item" data-tab="wallet"><div>💳</div>ওয়ালেট</div>
   </div>
 
-  <script src="tasks.js?v=2"></script>
-  <script src="offers.js?v=2"></script>
-  <script src="ads.js?v=2"></script>
+  <script src="tasks.js?v=6"></script>
+  <script src="offers.js?v=6"></script>
+  <script src="ads.js?v=6"></script>
 
   <script>
     function showToast(msg, isErr) {
@@ -163,14 +163,12 @@
     }
 
     function switchTab(name) {
-      var tabs = document.querySelectorAll(".tab-content");
-      tabs.forEach(function(el) { el.classList.remove("active"); });
+      document.querySelectorAll(".tab-content").forEach(function(el) { el.classList.remove("active"); });
       var target = document.getElementById("tab-" + name);
       if (target) target.classList.add("active");
 
-      var navs = document.querySelectorAll(".nav-item");
-      navs.forEach(function(el) { el.classList.remove("active"); });
-      var activeNav = document.querySelector('.nav-item[data-tab="' + name + '"]');
+      document.querySelectorAll(".nav-item").forEach(function(el) { el.classList.remove("active"); });
+      var activeNav = document.querySelector(".nav-item[data-tab=" + name + "]");
       if (activeNav) activeNav.classList.add("active");
 
       if (name === "game") renderQuiz();
@@ -193,129 +191,91 @@
       }
     });
 
-    var defaultTasks = [
-      { title: "📺 ভিডিও অ্যাড দেখুন (১৫ সেকেন্ড)", coins: 30, btn: "দেখুন", color: "btn-green", url: "https://google.com" },
-      { title: "📰 ব্রেকিং নিউজ পড়ুন (৩০ সেকেন্ড)", coins: 40, btn: "পড়ুন", color: "", url: "https://blogspot.com" },
-  <script>
-    function showToast(msg, isErr) {
-      var t = document.getElementById("toastBox");
-      t.innerText = msg;
-      t.style.background = isErr ? "#e11d48" : "#10b981";
-      t.style.display = "block";
-      setTimeout(function() { t.style.display = "none"; }, 3000);
-    }
-    try {
-      if (window.Telegram && window.Telegram.WebApp) {
-        var tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-          document.getElementById("tgUserName").innerText = "স্বাগতম, " + tg.initDataUnsafe.user.first_name + "!";
-          document.getElementById("tgUserId").innerText = "ID: " + tg.initDataUnsafe.user.id;
-        }
-      }
-    } catch (e) {}
-    var coins = parseInt(localStorage.getItem("bd_coins") || "100");
-    document.getElementById("coinBalance").innerText = coins;
-    function addCoins(val) {
-      coins += val;
-      localStorage.setItem("bd_coins", coins);
-      document.getElementById("coinBalance").innerText = coins;
-    }
-    function switchTab(name) {
-      var tabs = document.querySelectorAll(".tab-content");
-      tabs.forEach(function(el) { el.classList.remove("active"); });
-      var target = document.getElementById("tab-" + name);
-      if (target) target.classList.add("active");
-      var navs = document.querySelectorAll(".nav-item");
-      navs.forEach(function(el) { el.classList.remove("active"); });
-      var activeNav = document.querySelector('.nav-item[data-tab="' + name + '"]');
-      if (activeNav) activeNav.classList.add("active");
-      if (name === "game") renderQuiz();
-    }
-    document.querySelectorAll("[data-tab]").forEach(function(btn) {
-      btn.addEventListener("click", function() {
-        switchTab(this.getAttribute("data-tab"));
-      });
-    });
-    document.getElementById("bonusBtn").addEventListener("click", function() {
-      var today = new Date().toDateString();
-      if (localStorage.getItem("bd_bonus") === today) {
-        showToast("আজকের বোনাস ইতিমধ্যেই নিয়েছেন! আগামীকাল আসুন।", true);
-      } else {
-        localStorage.setItem("bd_bonus", today);
-        addCoins(50);
-        showToast("🎉 অভিনন্দন! ৫০ কয়েন বোনাস যোগ হয়েছে।", false);
-      }
-    });
     var defaultTasks = [
       { title: "📺 ভিডিও অ্যাড দেখুন (১৫ সেকেন্ড)", coins: 30, btn: "দেখুন", color: "btn-green", url: "https://google.com" },
       { title: "📰 ব্রেকিং নিউজ পড়ুন (৩০ সেকেন্ড)", coins: 40, btn: "পড়ুন", color: "", url: "https://blogspot.com" },
       { title: "🖼️ 4K ওয়ালপেপার ভিজিট করুন", coins: 40, btn: "ভিজিট", color: "", url: "https://blogspot.com" }
-    ];
-    var taskList = (typeof APP_TASKS !== "undefined") ? APP_TASKS : defaultTasks;
-    var tHtml = "";
-    taskList.forEach(function(t) {
-      tHtml += '<div class="task-item"><div><h4>' + t.title + '</h4><span>+' + t.coins + ' Coins</span></div><button type="button" class="btn btn-sm ' + (t.color || "") + '" onclick="runTask(' + t.coins + ', \'' + t.url + '\')">' + t.btn + '</button></div>';
-    });
-    document.getElementById("dynamicTasks").innerHTML = tHtml;
-    window.runTask = function(pts, url) {
-      window.open(url, "_blank");
-      setTimeout(function() {
-        addCoins(pts);
-        showToast("✅ টাস্ক সম্পন্ন! +" + pts + " কয়েন যোগ হয়েছে।", false);
-      }, 2000);
-    };
-    var defaultOffers = [
-      { title: "GP 10 GB ইন্টারনেট (৩০ দিন)", price: "বাজার ৳২৯৯ | আমাদের দাম ৳২৪৫", link: "https://blogspot.com" },
-      { title: "Robi 15 GB + 200 Min (৩০ দিন)", price: "বাজার ৳৩৯৯ | আমাদের দাম ৳৩৩০", link: "https://blogspot.com" }
-    ];
-    var offerList = (typeof APP_OFFERS !== "undefined") ? APP_OFFERS : defaultOffers;
-    var oHtml = "";
-    offerList.forEach(function(o) {
-      oHtml += '<div class="task-item"><div><h4>' + o.title + '</h4><span>' + o.price + '</span></div><button type="button" class="btn btn-sm btn-green" onclick="window.open(\'' + o.link + '\', \'_blank\')">কিনুন</button></div>';
-    });
-    document.getElementById("dynamicOffers").innerHTML = oHtml;
-    var defaultQuiz = [
-      { q: "বাংলাদেশের বর্তমান মুদ্রার নাম কী?", o: ["রুপি", "টাকা", "দিনার", "রিয়াল"], a: 1 },
-      { q: "কম্পিউটারের মস্তিষ্ক কাকে বলা হয়?", o: ["RAM", "Monitor", "CPU", "Mouse"], a: 2 },
-      { q: "পৃথিবীর বৃহত্তম মহাসাগর কোনটি?", o: ["আটলান্টিক", "ভারত", "প্রশান্ত মহাসাগর", "আর্কটিক"], a: 2 }
-    ];
-    var quizList = (typeof APP_QUIZ !== "undefined") ? APP_QUIZ : defaultQuiz;
-    var qIdx = 0;
-    function renderQuiz() {
-      var item = quizList[qIdx % quizList.length];
-      document.getElementById("quizQ").innerText = item.q;
-      document.getElementById("quizMsg").innerText = "";
-      var h = "";
-      for (var i = 0; i < item.o.length; i++) {
-        h += '<div class="quiz-opt" onclick="checkAns(' + i + ',' + item.a + ')">' + item.o[i] + '</div>';
-      }
-      document.getElementById("quizOpts").innerHTML = h;
-    }
-    window.checkAns = function(s, c) {
-      var m = document.getElementById("quizMsg");
-      if (s === c) {
-        m.style.color = "#10b981";
-        m.innerText = "✅ সঠিক উত্তর! +25 কয়েন যোগ হয়েছে।";
-        addCoins(25);
-      } else {
-        m.style.color = "#f43f5e";
-        m.innerText = "❌ ভুল উত্তর! পরের প্রশ্ন চেষ্টা করুন।";
-      }
-      qIdx++;
-      setTimeout(renderQuiz, 1200);
-    };
-    document.getElementById("withdrawBtn").addEventListener("click", function() {
-      var num = document.getElementById("payNum").value;
-      var amt = parseInt(document.getElementById("payAmt").value);
-      if (num.length < 11) return showToast("১১ ডিজিটের সঠিক নম্বর দিন!", true);
-      if (!amt || amt < 2000) return showToast("সর্বনিম্ন ২,০০০ কয়েন হতে হবে!", true);
-      if (amt > coins) return showToast("আপনার ব্যালেন্সে পর্যাপ্ত কয়েন নেই!", true);
-      addCoins(-amt);
-      showToast("✅ উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!", false);
-    });
-  </script>
+];
+var taskList = (typeof APP_TASKS !== "undefined") ? APP_TASKS : defaultTasks;
+var taskBox = document.getElementById("dynamicTasks");
+taskList.forEach(function(t) {
+var row = document.createElement("div");
+row.className = "task-item";
+row.innerHTML = "" + t.title + "+" + t.coins + " Coins";
+var b = document.createElement("button");
+b.type = "button";
+b.className = "btn btn-sm " + (t.color || "");
+b.innerText = t.btn;
+b.onclick = function() {
+window.open(t.url, "_blank");
+setTimeout(function() {
+addCoins(t.coins);
+showToast("✅ টাস্ক সম্পন্ন! +" + t.coins + " কয়েন যোগ হয়েছে।", false);
+}, 2000);
+};
+row.appendChild(b);
+taskBox.appendChild(row);
+});
+var defaultOffers = [
+{ title: "GP 10 GB ইন্টারনেট (৩০ দিন)", price: "বাজার ৳২৯৯ | আমাদের দাম ৳২৪৫", link: "blogspot.com" },
+{ title: "Robi 15 GB + 200 Min (৩০ দিন)", price: "বাজার ৳৩৯৯ | আমাদের দাম ৳৩৩০", link: "blogspot.com" }
+];
+var offerList = (typeof APP_OFFERS !== "undefined") ? APP_OFFERS : defaultOffers;
+var offerBox = document.getElementById("dynamicOffers");
+offerList.forEach(function(o) {
+var row = document.createElement("div");
+row.className = "task-item";
+row.innerHTML = "" + o.title + "" + o.price + "";
+var b = document.createElement("button");
+b.type = "button";
+b.className = "btn btn-sm btn-green";
+b.innerText = "কিনুন";
+b.onclick = function() { window.open(o.link, "_blank"); };
+row.appendChild(b);
+offerBox.appendChild(row);
+});
+var defaultQuiz = [
+{ q: "বাংলাদেশের বর্তমান মুদ্রার নাম কী?", o: ["রুপি", "টাকা", "দিনার", "রিয়াল"], a: 1 },
+{ q: "কম্পিউটারের মস্তিষ্ক কাকে বলা হয়?", o: ["RAM", "Monitor", "CPU", "Mouse"], a: 2 },
+{ q: "পৃথিবীর বৃহত্তম মহাসাগর কোনটি?", o: ["আটলান্টিক", "ভারত", "প্রশান্ত মহাসাগর", "আর্কটিক"], a: 2 }
+];
+var quizList = (typeof APP_QUIZ !== "undefined") ? APP_QUIZ : defaultQuiz;
+var qIdx = 0;
+function renderQuiz() {
+var item = quizList[qIdx % quizList.length];
+document.getElementById("quizQ").innerText = item.q;
+document.getElementById("quizMsg").innerText = "";
+var optBox = document.getElementById("quizOpts");
+optBox.innerHTML = "";
+item.o.forEach(function(optText, idx) {
+var d = document.createElement("div");
+d.className = "quiz-opt";
+d.innerText = optText;
+d.onclick = function() {
+var m = document.getElementById("quizMsg");
+if (idx === item.a) {
+m.style.color = "#10b981";
+m.innerText = "✅ সঠিক উত্তর! +25 কয়েন যোগ হয়েছে।";
+addCoins(25);
+} else {
+m.style.color = "#f43f5e";
+m.innerText = "❌ ভুল উত্তর! পরের প্রশ্ন চেষ্টা করুন।";
+}
+qIdx++;
+setTimeout(renderQuiz, 1200);
+};
+optBox.appendChild(d);
+});
+}
+document.getElementById("withdrawBtn").addEventListener("click", function() {
+var num = document.getElementById("payNum").value;
+var amt = parseInt(document.getElementById("payAmt").value);
+if (num.length < 11) return showToast("১১ ডিজিটের সঠিক নম্বর দিন!", true);
+if (!amt || amt < 2000) return showToast("সর্বনিম্ন ২,০০০ কয়েন হতে হবে!", true);
+if (amt > coins) return showToast("আপনার ব্যালেন্সে পর্যাপ্ত কয়েন নেই!", true);
+addCoins(-amt);
+showToast("✅ উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!", false);
+});
+     </script>
 </body>
 </html>
-
