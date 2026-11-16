@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>BD Smart Earn</title>
   <script src="https://telegram.org"></script>
+  <!-- প্লাগইন ফাইলগুলো অটোমেটিক লোড হবে -->
+  <script src="ads.js" defer></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
     body { background: #0b0f19; color: #f8fafc; padding-bottom: 80px; }
@@ -41,25 +43,22 @@
   <div class="header">
     <div class="user-info">
       <h3 id="tgUserName">স্বাগতম, ইউজার!</h3>
-      <p id="tgUserId">ID: Loading...</p>
+      <p id="tgUserId">ID: Guest Mode</p>
     </div>
     <div class="coin-badge">🪙 <span id="coinBalance">100</span></div>
   </div>
 
   <div class="container">
+    <!-- HOME -->
     <div id="tab-home" class="tab-content active">
       <div class="card">
         <div class="card-title">🎁 ডেইলি বোনাস ও বিজ্ঞাপন</div>
-        <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">প্রতিদিন অ্যাপে লগইন করে এবং ছোট বিজ্ঞাপন দেখে ফ্রি কয়েন জিতুন।</p>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">প্রতিদিন লগইন করে ফ্রি বোনাস কয়েন জিতুন।</p>
         <button class="btn btn-green" onclick="claimDailyBonus()">✨ আজকের ৫০ কয়েন বোনাস নিন</button>
       </div>
       <div class="card">
         <div class="card-title">💱 আজকের ডলার ও বাজার দর</div>
-        <div class="rate-grid">
-          <div class="rate-box"><small>🇺🇸 USD</small><strong>৳ 119.50</strong></div>
-          <div class="rate-box"><small>🇸🇦 SAR</small><strong>৳ 31.85</strong></div>
-          <div class="rate-box"><small>🇲🇾 MYR</small><strong>৳ 26.90</strong></div>
-        </div>
+        <div class="rate-grid" id="ratesBox"></div>
       </div>
       <div class="card">
         <div class="card-title">🔥 জনপ্রিয় সেবাসমূহ</div>
@@ -70,28 +69,15 @@
       </div>
     </div>
 
+    <!-- TASKS (tasks.js থেকে লোড হবে) -->
     <div id="tab-tasks" class="tab-content">
       <div class="card">
         <div class="card-title">📋 আজকের আয়ের টাস্কসমূহ</div>
-        <div class="task-item">
-          <div><h4>📺 ভিডিও অ্যাড দেখুন (১৫ সেকেন্ড)</h4><span>+30 Coins</span></div>
-          <button class="btn btn-sm btn-green" onclick="doTask(30, 'https://google.com')">দেখুন</button>
-        </div>
-        <div class="task-item">
-          <div><h4>📰 ব্রেকিং নিউজ পড়ুন (৩০ সেকেন্ড)</h4><span>+40 Coins</span></div>
-          <button class="btn btn-sm" onclick="doTask(40, 'https://blogspot.com')">পড়ুন</button>
-        </div>
-        <div class="task-item">
-          <div><h4>🖼️ 4K ওয়ালপেপার ভিজিট করুন</h4><span>+40 Coins</span></div>
-          <button class="btn btn-sm" onclick="doTask(40, 'https://blogspot.com')">ভিজিট</button>
-        </div>
-        <div class="task-item">
-          <div><h4>📢 অফিশিয়াল টেলিগ্রাম চ্যানেলে জয়েন</h4><span>+100 Coins</span></div>
-          <button class="btn btn-sm btn-purple" onclick="doTask(100, 'https://t.me')">জয়েন</button>
-        </div>
+        <div id="dynamicTasks">লোড হচ্ছে...</div>
       </div>
     </div>
 
+    <!-- GAME (offers.js থেকে লোড হবে) -->
     <div id="tab-game" class="tab-content">
       <div class="card">
         <div class="card-title">🧠 সাধারণ জ্ঞান কুইজ (+25 কয়েন)</div>
@@ -101,21 +87,11 @@
       </div>
     </div>
 
+    <!-- OFFERS & TOOLS (offers.js থেকে লোড হবে) -->
     <div id="tab-offers" class="tab-content">
       <div class="card">
         <div class="card-title">📶 বাজারের চেয়ে কম দামে সিম অফার</div>
-        <div class="task-item">
-          <div><h4>GP 10 GB ইন্টারনেট (৩০ দিন)</h4><span>বাজার ৳২৯৯ | আমাদের দাম ৳২৪৫</span></div>
-          <button class="btn btn-sm btn-green" onclick="buyOffer()">কিনুন</button>
-        </div>
-        <div class="task-item">
-          <div><h4>Robi 15 GB + 200 Min (৩০ দিন)</h4><span>বাজার ৳৩৯৯ | আমাদের দাম ৳৩৩০</span></div>
-          <button class="btn btn-sm btn-green" onclick="buyOffer()">কিনুন</button>
-        </div>
-        <div class="task-item">
-          <div><h4>Banglalink 5 GB (৭ দিন)</h4><span>বাজার ৳১১৯ | আমাদের দাম ৳৯৫</span></div>
-          <button class="btn btn-sm btn-green" onclick="buyOffer()">কিনুন</button>
-        </div>
+        <div id="dynamicOffers">লোড হচ্ছে...</div>
       </div>
       <div class="card">
         <div class="card-title">🛠️ দরকারি USSD কোড ও সেবা</div>
@@ -127,6 +103,7 @@
       </div>
     </div>
 
+    <!-- WALLET -->
     <div id="tab-wallet" class="tab-content">
       <div class="card">
         <div class="card-title">💳 টাকা বা রিচার্জ উইথড্র করুন</div>
@@ -151,11 +128,14 @@
     <div class="nav-item" id="nav-wallet" onclick="openTab('wallet')"><div>💳</div>ওয়ালেট</div>
   </div>
 
+  <!-- প্লাগইন ডাটা ফাইল -->
+  <script src="tasks.js"></script>
+  <script src="offers.js"></script>
+
   <script>
     try {
       var tg = window.Telegram.WebApp;
-      tg.ready();
-      tg.expand();
+      tg.ready(); tg.expand();
       if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         document.getElementById("tgUserName").innerText = "স্বাগতম, " + tg.initDataUnsafe.user.first_name + "!";
         document.getElementById("tgUserId").innerText = "ID: " + tg.initDataUnsafe.user.id;
@@ -175,14 +155,45 @@
       var tabs = document.getElementsByClassName("tab-content");
       for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
       document.getElementById("tab-" + name).classList.add("active");
-
       var navs = document.getElementsByClassName("nav-item");
       for (var j = 0; j < navs.length; j++) navs[j].classList.remove("active");
-      var activeNav = document.getElementById("nav-" + name);
-      if (activeNav) activeNav.classList.add("active");
-
+      document.getElementById("nav-" + name).classList.add("active");
       if (name === "game") nextQuiz();
     }
 
     function claimDailyBonus() {
       var today = new Date().toDateString();
+      if (localStorage.getItem("bd_bonus") === today) {
+        alert("আজকের ডেইলি বোনাস ইতিমধ্যেই নিয়েছেন! আগামীকাল আবার আসুন।");
+      } else {
+        localStorage.setItem("bd_bonus", today);
+        addCoins(50);
+        alert("অভিনন্দন! ৫০ কয়েন বোনাস যোগ হয়েছে।");
+      }
+    }
+
+    // tasks.js প্লাগইন রেন্ডার
+    if (typeof APP_TASKS !== "undefined") {
+      var tHtml = "";
+      APP_TASKS.forEach(function(t) {
+        tHtml += `<div class="task-item"><div><h4>${t.title}</h4><span>+${t.coins} Coins</span></div><button class="btn btn-sm ${t.color}" onclick="doTask(${t.coins}, '${t.url}')">${t.btn}</button></div>`;
+      });
+      document.getElementById("dynamicTasks").innerHTML = tHtml;
+    }
+
+    function doTask(pts, url) {
+      window.open(url, "_blank");
+      setTimeout(function() { addCoins(pts); alert("টাস্ক সম্পন্ন! +" + pts + " কয়েন যোগ হয়েছে।"); }, 2000);
+    }
+
+    // offers.js প্লাগইন রেন্ডার
+    if (typeof APP_RATES !== "undefined") {
+      var rHtml = "";
+      APP_RATES.forEach(function(r) { rHtml += `<div class="rate-box"><small>${r.flag}</small><strong>${r.rate}</strong></div>`; });
+      document.getElementById("ratesBox").innerHTML = rHtml;
+    }
+    if (typeof APP_OFFERS !== "undefined") {
+      var oHtml = "";
+      APP_OFFERS.forEach(function(o) {
+        oHtml += `<div class="task-item"><div><h4>${o.title}</h4><span>${o.price}</span></div><button class="btn btn-sm btn-green" onclick="window.open('${o.link}','_blank')">কিনুন</button></div>`;
+      });
