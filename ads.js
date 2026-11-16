@@ -1,42 +1,33 @@
-// Monetag Telegram Mini App SDK (Zone: 12280333)
-(function() {
-  var s = document.createElement("script");
-   s.src = "https://libtl" + ".com/sdk.js";
-  s.setAttribute("data-zone", "12280333");
-  s.setAttribute("data-sdk", "show_12280333");
-  s.async = true;
-  document.head.appendChild(s);
-})();
+// Monetag Direct SDK Loader (Zone: 12280333)
+var mScript = document.createElement("script");
+mScript.src = "https://libtl" + ".com/sdk.js";
+mScript.dataset.zone = "12280333";
+mScript.dataset.sdk = "show_12280333";
+document.getElementsByTagName("head")[0].appendChild(mScript);
 
-// বিজ্ঞাপন দেখানোর ফাংশন (লাইভ স্ট্যাটাসসহ)
 function runMonetagAd(onReward) {
-  if (typeof window.show_12280333 === "function") {
+  if (typeof window["show_12280333"] === "function") {
     showToast("⏳ বিজ্ঞাপন লোড হচ্ছে...", false);
-    window.show_12280333().then(function() {
+    window["show_12280333"]().then(function() {
       if (onReward) onReward();
-    }).catch(function(err) {
-      showToast("⚠️ বিজ্ঞাপন স্কিপ করা হয়েছে বা লোড হয়নি।", true);
+    }).catch(function() {
+      showToast("⚠️ বিজ্ঞাপন বন্ধ করা হয়েছে বা লোড হয়নি।", true);
     });
   } else {
-    showToast("⚠️ অ্যাড সার্ভার এখনো রেডি হচ্ছে (২-৫ মিনিট পর আবার চেষ্টা করুন)", true);
+    showToast("ℹ️ মোবাইল ফোনের টেলিগ্রাম অ্যাপ থেকে ওপেন করুন অথবা ৫ সেকেন্ড অপেক্ষা করুন।", true);
     if (onReward) onReward();
   }
 }
 
-// ডেইলি বোনাস ও কুইজ বাটনে অ্যাড যুক্ত করা
 document.addEventListener("click", function(e) {
   var txt = e.target ? e.target.innerText : "";
-  
-  // ডেইলি বোনাস বাটনে ক্লিক করলে
   if (e.target && e.target.id === "bonusBtn") {
     runMonetagAd();
   }
-  
-  // টাস্কের 'দেখুন' বাটনে ক্লিক করলে
   if (txt === "দেখুন") {
     e.preventDefault();
     runMonetagAd(function() {
-      showToast("🎉 বিজ্ঞাপন দেখা সম্পন্ন হয়েছে!", false);
+      showToast("🎉 বিজ্ঞাপন দেখা সম্পন্ন!", false);
     });
   }
 });
