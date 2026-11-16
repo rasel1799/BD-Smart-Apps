@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>BD Smart Earn & Utility</title>
+  <script src="https://telegram.org"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background: #0b0f19; color: #f8fafc; padding-bottom: 75px; }
+    
+    /* Top Header */
+    .header { background: linear-gradient(135deg, #1e1b4b, #0f172a); padding: 18px 16px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    .user-info h3 { font-size: 16px; color: #f8fafc; }
+    .user-info p { font-size: 12px; color: #94a3b8; }
+    .coin-badge { background: rgba(250, 204, 21, 0.15); border: 1px solid #facc15; color: #facc15; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px; }
+
+    /* Container & Cards */
+    .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .card { background: #131826; border: 1px solid #1e293b; border-radius: 14px; padding: 15px; margin-bottom: 14px; }
+    .card-title { font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+    /* Buttons */
+    .btn { background: #0284c7; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; transition: 0.2s; }
+    .btn:active { transform: scale(0.97); }
+    .btn-green { background: #10b981; }
+    .btn-purple { background: #8b5cf6; }
+    .btn-sm { width: auto; padding: 6px 12px; font-size: 12px; }
+
+    /* Task Item */
+    .task-item { display: flex; justify-content: space-between; align-items: center; background: #0f1420; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #1e293b; }
+    .task-item h4 { font-size: 14px; color: #f1f5f9; }
+    .task-item span { font-size: 12px; color: #facc15; font-weight: 600; }
+
+    /* Market Rates Grid */
+    .rate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+    .rate-box { background: #0f1420; padding: 10px 5px; border-radius: 10px; border: 1px solid #1e293b; }
+    .rate-box small { color: #94a3b8; font-size: 11px; display: block; }
+    .rate-box strong { color: #10b981; font-size: 13px; }
+
+    /* Quiz Options */
+    .quiz-opt { background: #1e293b; color: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 13px; border: 1px solid #334155; }
+    .quiz-opt:hover { border-color: #38bdf8; }
+
+    /* Form Inputs */
+    input, select { width: 100%; background: #0f1420; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px; }
+
+    /* Bottom Navigation */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #131826; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+    .nav-item { color: #64748b; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
+    .nav-item.active { color: #38bdf8; }
+    .nav-item div { font-size: 18px; margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="user-info">
+      <h3 id="tgUserName">স্বাগতম, ইউজার!</h3>
+      <p id="tgUserId">ID: Guest Mode</p>
+    </div>
+    <div class="coin-badge">🪙 <span id="coinBalance">0</span></div>
+  </div>
+
+  <div class="container">
+    
+    <!-- TAB 1: HOME -->
+    <div id="tab-home" class="tab-content active">
+      <div class="card">
+        <div class="card-title">🎁 ডেইলি বোনাস ও বিজ্ঞাপন</div>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">প্রতিদিন অ্যাপে লগইন করে এবং ছোট বিজ্ঞাপন দেখে ফ্রি কয়েন জিতুন।</p>
+        <button class="btn btn-green" onclick="claimDailyBonus()">✨ আজকের ৫০ কয়েন বোনাস নিন</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💱 আজকের ডলার ও বাজার দর</div>
+        <div class="rate-grid">
+          <div class="rate-box"><small>🇺🇸 USD</small><strong>৳ 119.50</strong></div>
+          <div class="rate-box"><small>🇸🇦 SAR</small><strong>৳ 31.85</strong></div>
+          <div class="rate-box"><small>🇲🇾 MYR</small><strong>৳ 26.90</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔥 জনপ্রিয় সেবাসমূহ</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button class="btn btn-purple" onclick="switchTab('offers')">📶 সস্তায় সিম অফার</button>
+          <button class="btn" onclick="switchTab('game')">🎮 কুইজ খেলে আয়</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: TASKS -->
+    <div id="tab-tasks" class="tab-content">
+      <div class="card">
+        <div class="card-title">📋 আজকের আয়ের টাস্কসমূহ</div>
+        
+        <div class="task-item">
+          <div><h4>📺 ভিডিও অ্যাড দেখুন (১৫ সেকেন্ড)</h4><span>+30 Coins</span></div>
+          <button class="btn btn-sm btn-green" onclick="completeTask(30, 'https://google.com')">দেখুন</button>
+        </div>
+
+        <div class="task-item">
+          <div><h4>📰 ব্রেকিং নিউজ পড়ুন (৩০ সেকেন্ড)</h4><span>+40 Coins</span></div>
+          <button class="btn btn-sm" onclick="completeTask(40, 'https://blogspot.com')">পড়ুন</button>
+        </div>
+
+        <div class="task-item">
+          <div><h4>🖼️ 4K ওয়ালপেপার ভিজিট করুন</h4><span>+40 Coins</span></div>
+          <button class="btn btn-sm" onclick="completeTask(40, 'https://blogspot.com')">ভিজিট</button>
+        </div>
+
+        <div class="task-item">
+          <div><h4>📢 অফিশিয়াল টেলিগ্রাম চ্যানেলে জয়েন</h4><span>+100 Coins</span></div>
+          <button class="btn btn-sm btn-purple" onclick="completeTask(100, 'https://t.me')">জয়েন</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: QUIZ GAME -->
+    <div id="tab-game" class="tab-content">
+      <div class="card">
+        <div class="card-title">🧠 সাধারণ জ্ঞান কুইজ (প্রতি সঠিক উত্তরে +25 কয়েন)</div>
+        <p id="quizQuestion" style="font-size:14px; font-weight:600; margin-bottom:12px; color:#f1f5f9;">প্রশ্ন লোড হচ্ছে...</p>
+        <div id="quizOptions"></div>
+        <p id="quizFeedback" style="font-size:13px; margin-top:8px; font-weight:700;"></p>
+      </div>
+    </div>
+
+    <!-- TAB 4: OFFERS & TOOLS -->
+    <div id="tab-offers" class="tab-content">
+      <div class="card">
+        <div class="card-title">📶 বাজারের চেয়ে কম দামে সিম অফার</div>
+        <div class="task-item">
+          <div><h4>GP 10 GB ইন্টারনেট (৩০ দিন)</h4><span>বাজার মূল্য ৳২৯৯ | আমাদের দাম ৳২৪৫</span></div>
+          <button class="btn btn-sm btn-green" onclick="orderOffer('GP 10GB - 245 Tk')">কিনুন</button>
+        </div>
+        <div class="task-item">
+          <div><h4>Robi 15 GB + 200 Min (৩০ দিন)</h4><span>বাজার মূল্য ৳৩৯৯ | আমাদের দাম ৳৩৩০</span></div>
+          <button class="btn btn-sm btn-green" onclick="orderOffer('Robi 15GB - 330 Tk')">কিনুন</button>
+        </div>
+        <div class="task-item">
+          <div><h4>Banglalink 5 GB (৭ দিন)</h4><span>বাজার মূল্য ৳১১৯ | আমাদের দাম ৳৯৫</span></div>
+          <button class="btn btn-sm btn-green" onclick="orderOffer('BL 5GB - 95 Tk')">কিনুন</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛠️ বেকার যুবক ও শিক্ষার্থীদের দরকারি টুলস</div>
+        <p style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+          • <strong>জরুরি USSD:</strong> GP ব্যালেন্স `*566#` | Robi `*222#` | BL `*124#`<br/>
+          • <strong>সরকারি চাকরি পোর্টাল:</strong> ://teletalk.com.bd<br/>
+          • <strong>এনআইডি (NID) সেবা:</strong> services.nidw.gov.bd
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 5: WALLET -->
+    <div id="tab-wallet" class="tab-content">
+      <div class="card">
+        <div class="card-title">💳 টাকা বা রিচার্জ উইথড্র করুন</div>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">১,০০০ কয়েন = ১০ টাকা (সর্বনিম্ন ২,০০০ কয়েন হলে উইথড্র করা যাবে)</p>
+        <select id="payMethod">
+          <option value="Mobile Recharge">মোবাইল রিচার্জ (সর্বনিম্ন ২০ টাকা)</option>
+          <option value="bKash">বিকাশ (bKash Personal)</option>
+          <option value="Nagad">নগদ (Nagad Personal)</option>
+        </select>
+        <input type="number" id="payNumber" placeholder="আপনার ১১ ডিজিটের মোবাইল নম্বর দিন" />
+        <input type="number" id="payCoins" placeholder="কত কয়েন উইথড্র করবেন? (যেমন: 2000)" />
+        <button class="btn btn-green" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home', this)"><div>🏠</div>হোম</div>
+    <div class="nav-item" onclick="switchTab('tasks', this)"><div>📋</div>টাস্ক</div>
+    <div class="nav-item" onclick="switchTab('game', this)"><div>🎮</div>গেম</div>
+    <div class="nav-item" onclick="switchTab('offers', this)"><div>📶</div>অফার ও টুলস</div>
+    <div class="nav-item" onclick="switchTab('wallet', this)"><div>💳</div>ওয়ালেট</div>
+  </div>
+
+  <script>
+    // Telegram WebApp Init
+    var tg = window.Telegram.WebApp;
+    tg.expand();
+
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      document.getElementById("tgUserName").innerText = "স্বাগতম, " + tg.initDataUnsafe.user.first_name + "!";
+      document.getElementById("tgUserId").innerText = "Telegram ID: " + tg.initDataUnsafe.user.id;
+    }
+
+    // Coin Balance System (LocalStorage)
+    var coins = parseInt(localStorage.getItem("user_coins") || "100");
+    function updateCoins(amount) {
+      coins += amount;
+      localStorage.setItem("user_coins", coins);
+
