@@ -31,3 +31,12 @@ setTimeout(function() {
     });
   }
 }, 500);
+// ভিডিও অ্যাড বাটনে ক্লিক করলে সরাসরি Monetag ভিডিও অ্যাড চালু হবে
+document.addEventListener("click", function(e) {
+  if (e.target && e.target.innerText === "দেখুন") {
+    e.preventDefault();
+    showMonetagAd(function() {
+      showToast("🎉 বিজ্ঞাপন দেখার জন্য ধন্যবাদ!", false);
+    });
+  }
+});
