@@ -1,4 +1,4 @@
-// ১. সবার আগে হোমপেজ ও লাইভ চ্যাট প্লাগইন (chat.js) নিরাপদে লোড করা
+// ১. হোমপেজ ও লাইভ চ্যাট প্লাগইন (chat.js) লোড করা
 if (!window.BD_CHAT_LOADED) {
   window.BD_CHAT_LOADED = true;
   var chatScript = document.createElement("script");
@@ -42,7 +42,7 @@ document.addEventListener("click", function(e) {
   }
 });
 
-// উইথড্র রিকোয়েস্ট সরাসরি আপনার টেলিগ্রামে পাঠানোর প্লাগইন
+// ৩. উইথড্র রিকোয়েস্ট (আসল টেলিগ্রাম নাম ও আইডিসহ) সরাসরি আপনার টেলিগ্রামে পাঠানোর প্লাগইন
 var ADMIN_BOT_TOKEN = "9063322268:AAFiBMNJxOUKQKcHoudvX3iH6aKemPq8Mx8";
 var ADMIN_CHAT_ID = "1920591350";
 
@@ -64,17 +64,29 @@ setTimeout(function() {
 
     var uName = "Guest User";
     var uId = "Unknown";
+    var uUser = "নেই";
+
     try {
-      var u = window.Telegram.WebApp.initDataUnsafe.user;
-      if (u) {
-        uName = u.first_name + (u.last_name ? " " + u.last_name : "");
-        uId = u.id;
+      var tg = window.Telegram && window.Telegram.WebApp;
+      if (tg) {
+        tg.ready();
+        var u = tg.initDataUnsafe && tg.initDataUnsafe.user;
+        if (!u && tg.initData) {
+          var params = new URLSearchParams(tg.initData);
+          if (params.get("user")) u = JSON.parse(params.get("user"));
+        }
+        if (u) {
+          uName = u.first_name + (u.last_name ? " " + u.last_name : "");
+          uId = u.id;
+          if (u.username) uUser = "@" + u.username;
+        }
       }
     } catch (e) {}
 
     var taka = (amt / 100).toFixed(0);
     var msg = "💸 নতুন উইথড্র রিকোয়েস্ট!\n\n"
             + "👤 নাম: " + uName + "\n"
+            + "🔗 ইউজারনেম: " + uUser + "\n"
             + "🆔 আইডি: " + uId + "\n"
             + "💳 মাধ্যম: " + method + "\n"
             + "📱 নম্বর: " + num + "\n"
