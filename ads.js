@@ -2,7 +2,7 @@
 if (!window.BD_CHAT_LOADED) {
   window.BD_CHAT_LOADED = true;
   var chatScript = document.createElement("script");
-  chatScript.src = "chat.js?v=4";
+  chatScript.src = "chat.js?v=5";
   document.body.appendChild(chatScript);
 }
 
@@ -24,7 +24,7 @@ function runMonetagAd(onReward) {
       showToast("⚠️ বিজ্ঞাপন বন্ধ করা হয়েছে বা লোড হয়নি।", true);
     });
   } else {
-    showToast("ℹ️ মোবাইল ফোনের টেলিগ্রাম অ্যাপ থেকে ওপেন করুন অথবা ৫ সেকেন্ড অপেক্ষা করুন।", true);
+    showToast("ℹ️ ৫ সেকেন্ড অপেক্ষা করে আবার চেষ্টা করুন।", true);
     if (onReward) onReward();
   }
 }
@@ -42,14 +42,13 @@ document.addEventListener("click", function(e) {
   }
 });
 
-// ৩. উইথড্র রিকোয়েস্ট (আসল টেলিগ্রাম নাম ও আইডিসহ) সরাসরি আপনার টেলিগ্রামে পাঠানোর প্লাগইন
+// ৩. উইথড্র রিকোয়েস্ট সরাসরি আপনার টেলিগ্রামে পাঠানোর প্লাগইন
 var ADMIN_BOT_TOKEN = "9063322268:AAFiBMNJxOUKQKcHoudvX3iH6aKemPq8Mx8";
 var ADMIN_CHAT_ID = "1920591350";
 
 setTimeout(function() {
   var wBtn = document.getElementById("withdrawBtn");
   if (!wBtn) return;
-
   var newWBtn = wBtn.cloneNode(true);
   wBtn.parentNode.replaceChild(newWBtn, wBtn);
 
@@ -62,10 +61,7 @@ setTimeout(function() {
     if (!amt || amt < 2000) return showToast("সর্বনিম্ন ২,০০০ কয়েন হতে হবে!", true);
     if (amt > coins) return showToast("আপনার ব্যালেন্সে পর্যাপ্ত কয়েন নেই!", true);
 
-    var uName = "Guest User";
-    var uId = "Unknown";
-    var uUser = "নেই";
-
+    var uName = "Guest User", uId = "Unknown", uUser = "নেই";
     try {
       var tg = window.Telegram && window.Telegram.WebApp;
       if (tg) {
@@ -84,13 +80,7 @@ setTimeout(function() {
     } catch (e) {}
 
     var taka = (amt / 100).toFixed(0);
-    var msg = "💸 নতুন উইথড্র রিকোয়েস্ট!\n\n"
-            + "👤 নাম: " + uName + "\n"
-            + "🔗 ইউজারনেম: " + uUser + "\n"
-            + "🆔 আইডি: " + uId + "\n"
-            + "💳 মাধ্যম: " + method + "\n"
-            + "📱 নম্বর: " + num + "\n"
-            + "🪙 কয়েন: " + amt + " (" + taka + " টাকা)";
+    var msg = "💸 নতুন উইথড্র রিকোয়েস্ট!\n\n👤 নাম: " + uName + "\n🔗 ইউজারনেম: " + uUser + "\n🆔 আইডি: " + uId + "\n💳 মাধ্যম: " + method + "\n📱 নম্বর: " + num + "\n🪙 কয়েন: " + amt + " (" + taka + " টাকা)";
 
     newWBtn.disabled = true;
     newWBtn.innerText = "⏳ পাঠানো হচ্ছে...";
@@ -121,7 +111,7 @@ setTimeout(function() {
   };
 }, 600);
 
-// ৪. হোমপেজ রেফারেল ও ইনভাইট সিস্টেম প্লাগইন (প্রতি টাস্কে +২০ কয়েন | দৈনিক সর্বোচ্চ ১০০ কয়েন/বন্ধু)
+// ৪. হোমপেজ রেফারেল ও ইনভাইট সিস্টেম প্লাগইন
 (function() {
   var DB_URL = "https://bd-smart-earn-d83e7-default-rtdb" + ".asia-southeast1.firebasedatabase.app";
   var BOT_APP_LINK = "https://t.me" + "/bdsmartearn99_bot/app";
@@ -137,7 +127,6 @@ setTimeout(function() {
       }
     } catch (e) {}
 
-    // কম্পিউটার বা গেস্ট মোডেও যেন লিংক দেখায় তার ব্যাকআপ আইডি
     if (!myUid) {
       var savedGuest = localStorage.getItem("bd_guest_uid");
       if (!savedGuest) {
@@ -150,22 +139,15 @@ setTimeout(function() {
     var myInviteLink = BOT_APP_LINK + "?startapp=" + myUid;
     var todayKey = new Date().toISOString().slice(0, 10);
 
-    // ১. হোমপেজে ডেইলি বোনাস কার্ডের ঠিক নিচে ইনভাইট কার্ড বসানো
     var homeTab = document.getElementById("tab-home");
     if (homeTab && !document.getElementById("myRefCardBox")) {
       var refCard = document.createElement("div");
       refCard.id = "myRefCardBox";
       refCard.className = "card";
       refCard.style.borderColor = "#facc15";
-      refCard.innerHTML = `
-        <div class="card-title" style="color:#facc15;">🤝 বন্ধুকে ইনভাইট করে আয় (প্রতি টাস্কে +২০ কয়েন)</div>
-        <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">বন্ধুর প্রতিটি টাস্ক কমপ্লিটে পাবেন <strong>+২০ কয়েন</strong> (দৈনিক সর্বোচ্চ ১০০ কয়েন/বন্ধু ও দিনে ১০ রেফার)। আজকের রেফার: <strong id="todayRefCount" style="color:#10b981;">0</strong>/১০</p>
-        <div style="display:flex; gap:6px;">
-          <input type="text" id="myRefInput" value="${myInviteLink}" readonly style="margin:0; flex:1; font-size:11px; color:#f8fafc; background:#0b0f19;" />
-          <button type="button" class="btn btn-sm btn-green" id="copyRefBtn">কপি</button>
-          <button type="button" class="btn btn-sm btn-purple" id="shareRefBtn">শেয়ার</button>
-        </div>
-      `;
+      refCard.innerHTML = '<div class="card-title" style="color:#facc15;">🤝 বন্ধুকে ইনভাইট করে আয় (+২০ কয়েন/টাস্ক)</div><p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">বন্ধুর প্রতিটি টাস্ক কমপ্লিটে পাবেন <strong>+২০ কয়েন</strong> (দৈনিক সর্বোচ্চ ১০০ কয়েন/বন্ধু ও ১০ রেফার)। আজকের রেফার: <strong id="todayRefCount" style="color:#10b981;">0</strong>/১০</p><div style="display:flex; gap:6px;"><input type="text" id="myRefInput" value="' + myInviteLink + '" readonly style="margin:0; flex:1; font-size:11px; color:#f8fafc; background:#0b0f19;" /><button type="button" class="btn btn-sm btn-green" id="copyRefBtn">কপি</button><button type="button" class="btn btn-sm btn-purple" id="shareRefBtn">শেয়ার</button></div>';
+      
+      // ডেইলি বোনাস কার্ডের ঠিক নিচে বসানো
       if (homeTab.children.length > 1) {
         homeTab.insertBefore(refCard, homeTab.children[1]);
       } else {
@@ -185,32 +167,26 @@ setTimeout(function() {
       };
     }
 
-    // ২. নতুন ইউজার রেফার লিংকে আসলে সংযুক্ত করা (ডিভাইস লকসহ)
     if (refParam && refParam !== myUid && myUid.indexOf("tg_") === 0) {
       if (!localStorage.getItem("bd_device_ref_locked") && !localStorage.getItem("bd_my_referrer")) {
-        fetch(DB_URL + "/referrals/user_ref/" + myUid + ".json")
-          .then(function(r) { return r.json(); })
-          .then(function(existingRef) {
-            if (!existingRef) {
-              fetch(DB_URL + "/referrals/daily_limit/" + refParam + "/" + todayKey + ".json")
-                .then(function(r) { return r.json(); })
-                .then(function(dayCnt) {
-                  var currentCnt = dayCnt || 0;
-                  if (currentCnt < 10) {
-                    localStorage.setItem("bd_device_ref_locked", "yes");
-                    localStorage.setItem("bd_my_referrer", refParam);
-                    fetch(DB_URL + "/referrals/user_ref/" + myUid + ".json", { method: "PUT", body: JSON.stringify(refParam) });
-                    fetch(DB_URL + "/referrals/daily_limit/" + refParam + "/" + todayKey + ".json", { method: "PUT", body: JSON.stringify(currentCnt + 1) });
-                  }
-                });
-            } else {
-              localStorage.setItem("bd_my_referrer", existingRef);
-            }
-          });
+        fetch(DB_URL + "/referrals/user_ref/" + myUid + ".json").then(r => r.json()).then(existingRef => {
+          if (!existingRef) {
+            fetch(DB_URL + "/referrals/daily_limit/" + refParam + "/" + todayKey + ".json").then(r => r.json()).then(dayCnt => {
+              var currentCnt = dayCnt || 0;
+              if (currentCnt < 10) {
+                localStorage.setItem("bd_device_ref_locked", "yes");
+                localStorage.setItem("bd_my_referrer", refParam);
+                fetch(DB_URL + "/referrals/user_ref/" + myUid + ".json", { method: "PUT", body: JSON.stringify(refParam) });
+                fetch(DB_URL + "/referrals/daily_limit/" + refParam + "/" + todayKey + ".json", { method: "PUT", body: JSON.stringify(currentCnt + 1) });
+              }
+            });
+          } else {
+            localStorage.setItem("bd_my_referrer", existingRef);
+          }
+        });
       }
     }
 
-    // ৩. বন্ধুর টাস্ক থেকে রেফারকারীকে +২০ কয়েন দেওয়া
     var origAddCoins = window.addCoins;
     window.addCoins = function(val) {
       origAddCoins(val);
@@ -221,38 +197,30 @@ setTimeout(function() {
           var givenToday = parseInt(localStorage.getItem(earnedTodayKey) || "0");
           if (givenToday < 100) {
             localStorage.setItem(earnedTodayKey, givenToday + 20);
-            fetch(DB_URL + "/referrals/pending/" + myReferrer + ".json")
-              .then(function(r) { return r.json(); })
-              .then(function(pend) {
-                fetch(DB_URL + "/referrals/pending/" + myReferrer + ".json", { method: "PUT", body: JSON.stringify((pend || 0) + 20) });
-              });
+            fetch(DB_URL + "/referrals/pending/" + myReferrer + ".json").then(r => r.json()).then(pend => {
+              fetch(DB_URL + "/referrals/pending/" + myReferrer + ".json", { method: "PUT", body: JSON.stringify((pend || 0) + 20) });
+            });
           }
         }
       }
     };
 
-    // ৪. নিজের রেফার সংখ্যা ও পেন্ডিং বোনাস চেক করা
     function checkMyReferrals() {
       if (myUid.indexOf("tg_") !== 0) return;
-      fetch(DB_URL + "/referrals/daily_limit/" + myUid + "/" + todayKey + ".json")
-        .then(function(r) { return r.json(); })
-        .then(function(cnt) {
-          var el = document.getElementById("todayRefCount");
-          if (el) el.innerText = cnt || 0;
-        });
-
-      fetch(DB_URL + "/referrals/pending/" + myUid + ".json")
-        .then(function(r) { return r.json(); })
-        .then(function(pend) {
-          if (pend && pend > 0) {
-            fetch(DB_URL + "/referrals/pending/" + myUid + ".json", { method: "PUT", body: JSON.stringify(0) }).then(function() {
-              window.IS_CLAIMING_REF_BONUS = true;
-              origAddCoins(pend);
-              window.IS_CLAIMING_REF_BONUS = false;
-              showToast("🎉 আপনার বন্ধু টাস্ক করেছে! +" + pend + " রেফার কয়েন পেলেন!", false);
-            });
-          }
-        });
+      fetch(DB_URL + "/referrals/daily_limit/" + myUid + "/" + todayKey + ".json").then(r => r.json()).then(cnt => {
+        var el = document.getElementById("todayRefCount");
+        if (el) el.innerText = cnt || 0;
+      });
+      fetch(DB_URL + "/referrals/pending/" + myUid + ".json").then(r => r.json()).then(pend => {
+        if (pend && pend > 0) {
+          fetch(DB_URL + "/referrals/pending/" + myUid + ".json", { method: "PUT", body: JSON.stringify(0) }).then(() => {
+            window.IS_CLAIMING_REF_BONUS = true;
+            origAddCoins(pend);
+            window.IS_CLAIMING_REF_BONUS = false;
+            showToast("🎉 আপনার বন্ধু টাস্ক করেছে! +" + pend + " রেফার কয়েন পেলেন!", false);
+          });
+        }
+      });
     }
 
     checkMyReferrals();
