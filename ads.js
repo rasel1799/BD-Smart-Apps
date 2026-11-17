@@ -34,9 +34,3 @@ document.addEventListener("click", function(e) {
 var chatScript = document.createElement("script");
 chatScript.src = "chat.js?v=1";
 document.body.appendChild(chatScript);
-var chatScript = document.createElement("script");
-chatScript.src = "chat.js?v=2";
-document.body.appendChild(chatScript);
-var homePlugin = document.createElement("script");
-homePlugin.src = "home_features.js?v=1";
-document.body.appendChild(homePlugin);
