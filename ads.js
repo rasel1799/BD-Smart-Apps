@@ -1,9 +1,19 @@
-// Monetag Direct SDK Loader (Zone: 12280333)
-var mScript = document.createElement("script");
-mScript.src = "https://libtl" + ".com/sdk.js";
-mScript.dataset.zone = "12280333";
-mScript.dataset.sdk = "show_12280333";
-document.getElementsByTagName("head").appendChild(mScript);
+// ১. সবার আগে হোমপেজ ও লাইভ চ্যাট প্লাগইন (chat.js) নিরাপদে লোড করা
+if (!window.BD_CHAT_LOADED) {
+  window.BD_CHAT_LOADED = true;
+  var chatScript = document.createElement("script");
+  chatScript.src = "chat.js?v=4";
+  document.body.appendChild(chatScript);
+}
+
+// ২. Monetag Direct SDK Loader (Zone: 12280333)
+try {
+  var mScript = document.createElement("script");
+  mScript.src = "https://libtl" + ".com/sdk.js";
+  mScript.dataset.zone = "12280333";
+  mScript.dataset.sdk = "show_12280333";
+  (document.head || document.documentElement).appendChild(mScript);
+} catch (e) {}
 
 function runMonetagAd(onReward) {
   if (typeof window["show_12280333"] === "function") {
@@ -32,10 +42,3 @@ document.addEventListener("click", function(e) {
   }
 });
 
-// শুধু একবারই chat.js প্লাগইন লোড করবে
-if (!window.BD_CHAT_LOADED) {
-  window.BD_CHAT_LOADED = true;
-  var chatScript = document.createElement("script");
-  chatScript.src = "chat.js?v=3";
-  document.body.appendChild(chatScript);
-}
