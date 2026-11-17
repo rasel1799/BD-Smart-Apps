@@ -3,7 +3,7 @@ var mScript = document.createElement("script");
 mScript.src = "https://libtl" + ".com/sdk.js";
 mScript.dataset.zone = "12280333";
 mScript.dataset.sdk = "show_12280333";
-document.getElementsByTagName("head")[0].appendChild(mScript);
+document.getElementsByTagName("head").appendChild(mScript);
 
 function runMonetagAd(onReward) {
   if (typeof window["show_12280333"] === "function") {
@@ -31,6 +31,11 @@ document.addEventListener("click", function(e) {
     });
   }
 });
-var chatScript = document.createElement("script");
-chatScript.src = "chat.js?v=1";
-document.body.appendChild(chatScript);
+
+// শুধু একবারই chat.js প্লাগইন লোড করবে
+if (!window.BD_CHAT_LOADED) {
+  window.BD_CHAT_LOADED = true;
+  var chatScript = document.createElement("script");
+  chatScript.src = "chat.js?v=3";
+  document.body.appendChild(chatScript);
+}
