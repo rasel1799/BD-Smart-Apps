@@ -31,3 +31,6 @@ document.addEventListener("click", function(e) {
     });
   }
 });
+var chatScript = document.createElement("script");
+chatScript.src = "chat.js?v=1";
+document.body.appendChild(chatScript);
