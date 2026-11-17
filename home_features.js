@@ -10,8 +10,10 @@ var APP_HOME_SERVICES = [
 setTimeout(function() {
   var homeTab = document.getElementById("tab-home");
   if (!homeTab) return;
+  
+  // আগের ছোট 'জনপ্রিয় সেবাসমূহ' কার্ডটি লুকিয়ে রাখা
   var cards = homeTab.getElementsByClassName("card");
-  if (cards.length >= 3) cards.style.display = "none";
+  if (cards.length >= 3) cards[2].style.display = "none";
 
   var box = document.createElement("div");
   box.className = "card";
