@@ -2,7 +2,7 @@
 if (!window.BD_CHAT_LOADED) {
   window.BD_CHAT_LOADED = true;
   var chatScript = document.createElement("script");
-  chatScript.src = "chat.js?v=5";
+  chatScript.src = "chat.js?v=10";
   document.body.appendChild(chatScript);
 }
 
