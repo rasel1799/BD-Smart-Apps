@@ -227,7 +227,6 @@ setTimeout(function() {
     setInterval(checkMyReferrals, 10000);
   }, 700);
 })();
-
 // ৫. লস-প্রুফ লাকি স্পিন হুইল প্লাগইন (দৈনিক সর্বোচ্চ ৫ স্পিন | প্রতি স্পিনে Monetag অ্যাড + ৫-১৫ কয়েন)
 (function() {
   setTimeout(function() {
@@ -269,7 +268,7 @@ setTimeout(function() {
 
     var isSpinning = false;
     var currentDeg = 0;
-    var rewards =;
+    var rewards = new Array(5, 8, 10, 12, 15);
 
     document.getElementById("spinNowBtn").onclick = function() {
       if (isSpinning || usedSpins >= maxSpins) return;
@@ -311,3 +310,4 @@ setTimeout(function() {
     };
   }, 900);
 })();
+
