@@ -44,16 +44,20 @@ var FIREBASE_DB_URL = "https://bd-smart-earn-d83e7-default-rtdb" + ".asia-southe
         grid.appendChild(b);
       });
 
-      document.getElementById("hVidBtn").onclick = function() {
+            document.getElementById("hVidBtn").onclick = function() {
         var url = document.getElementById("hVidInp").value.trim();
-        if (!url) return showToast("ভিডিও লিংক দিন!", true);
-        if (typeof runMonetagAd === "function") runMonetagAd();
-        var res = document.getElementById("hVidRes");
-        res.innerHTML = '<p style="font-size:12px; color:#facc15;">⏳ প্রসেস হচ্ছে...</p>';
-        fetch("https://tikwm.com" + encodeURIComponent(url)).then(r => r.json()).then(d => {
-          if (d && d.data && d.data.play) res.innerHTML = '<a href="' + d.data.play + '" target="_blank" download class="btn btn-purple" style="display:block; text-align:center; text-decoration:none;">✅ ভিডিও সেভ করুন</a>';
-          else res.innerHTML = '<p style="font-size:12px; color:#f43f5e;">⚠️ সঠিক পাবলিক লিংক দিন।</p>';
-        });
+        if (!url) return showToast("আগে একটি ভিডিও লিংক পেস্ট করুন!", true);
+        
+        var targetBlogUrl = "https://downloader90" + "://" + encodeURIComponent(url);
+        showToast("⏳ বিজ্ঞাপন শেষে আপনার ডাউনলোড পেজ খুলবে...", false);
+
+        if (typeof runMonetagAd === "function") {
+          runMonetagAd(function() {
+            window.open(targetBlogUrl, "_blank");
+          });
+        } else {
+          window.open(targetBlogUrl, "_blank");
+        }
       };
     }
 
