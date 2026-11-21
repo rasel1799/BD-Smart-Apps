@@ -208,41 +208,119 @@ setTimeout(function() {
       };
     }
 
-    if (homeTab && !document.getElementById("realLeaderboardCard")) {
-      var lc = document.createElement("div"); lc.id = "realLeaderboardCard"; lc.className = "card"; lc.style.borderColor = "#38bdf8";
-      lc.innerHTML = '<div class="card-title" style="color:#38bdf8; display:flex; justify-content:space-between;"><span>🏆 লাইভ লিডারবোর্ড ও পেমেন্ট</span><span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px;">LIVE</span></div><div style="display:flex; gap:6px; margin-bottom:10px;"><button type="button" class="btn btn-sm" id="bPay" style="flex:1; background:#10b981;">💸 লাইভ উইথড্র</button><button type="button" class="btn btn-sm" id="bCoin" style="flex:1; background:#1e293b;">👑 টপ কয়েন</button></div><div id="vPay" style="max-height:200px; overflow-y:auto;"></div><div id="vCoin" style="display:none; max-height:200px; overflow-y:auto;"></div>';
-      homeTab.appendChild(lc);
-      document.getElementById("bPay").onclick = function() { document.getElementById("vPay").style.display = "block"; document.getElementById("vCoin").style.display = "none"; this.style.background = "#10b981"; document.getElementById("bCoin").style.background = "#1e293b"; };
-      document.getElementById("bCoin").onclick = function() { document.getElementById("vPay").style.display = "none"; document.getElementById("vCoin").style.display = "block"; this.style.background = "#f59e0b"; document.getElementById("bPay").style.background = "#1e293b"; };
+    // গ) নিচের নেভিগেশন বারের একদম ডানপাশে (ওয়ালেটের ডানদিকে) 'লিডারবোর্ড' ট্যাব ও পেজ যুক্ত করা
+    var bottomNav = document.querySelector(".bottom-nav");
+    var mainApp = document.getElementById("tab-home") ? document.getElementById("tab-home").parentNode : null;
+
+    if (bottomNav && mainApp && !document.getElementById("navLeaderboardBtn")) {
+      // ১. নতুন লিডারবোর্ড পেজ তৈরি করা
+      var lbTabDiv = document.createElement("div");
+      lbTabDiv.id = "tab-leaderboard";
+      lbTabDiv.className = "tab-content";
+      lbTabDiv.style.display = "none";
+      lbTabDiv.innerHTML = '<div class="card" style="border-color:#38bdf8;"><div class="card-title" style="color:#38bdf8; display:flex; justify-content:space-between; align-items:center;"><span>🏆 লাইভ লিডারবোর্ড ও পেমেন্ট</span><span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px;">LIVE</span></div><div style="display:flex; gap:6px; margin-bottom:10px;"><button type="button" class="btn btn-sm" id="bPay" style="flex:1; background:#10b981;">💸 লাইভ উইথড্র</button><button type="button" class="btn btn-sm" id="bCoin" style="flex:1; background:#1e293b;">👑 টপ কয়েন (১+)</button></div><div id="vPay" style="max-height:360px; overflow-y:auto;"></div><div id="vCoin" style="display:none; max-height:360px; overflow-y:auto;"></div></div>';
+      mainApp.appendChild(lbTabDiv);
+
+      // ২. নিচের মেনুতে ওয়ালেটের ডানপাশে নতুন বাটন বসানো
+      var navBtn = document.createElement("div");
+      navBtn.id = "navLeaderboardBtn";
+      navBtn.className = "nav-item";
+      navBtn.setAttribute("data-tab", "leaderboard");
+      navBtn.innerHTML = '<span>🏆</span>লিডারবোর্ড';
+      bottomNav.appendChild(navBtn);
+
+      // ৩. নিচের সব মেনু বাটনের সাথে নতুন ট্যাবটি কানেক্ট করা
+      document.querySelectorAll(".nav-item").forEach(function(item) {
+        item.addEventListener("click", function() {
+          var target = this.getAttribute("data-tab");
+          document.querySelectorAll(".nav-item").forEach(function(n) { n.classList.remove("active"); });
+          this.classList.add("active");
+          document.querySelectorAll(".tab-content").forEach(function(tc) { tc.style.display = "none"; });
+          var activeBox = document.getElementById("tab-" + target);
+          if (activeBox) activeBox.style.display = "block";
+        });
+      });
+
+      document.getElementById("bPay").onclick = function() {
+        document.getElementById("vPay").style.display = "block";
+        document.getElementById("vCoin").style.display = "none";
+        this.style.background = "#10b981";
+        document.getElementById("bCoin").style.background = "#1e293b";
+      };
+      document.getElementById("bCoin").onclick = function() {
+        document.getElementById("vPay").style.display = "none";
+        document.getElementById("vCoin").style.display = "block";
+        this.style.background = "#f59e0b";
+        document.getElementById("bPay").style.background = "#1e293b";
+      };
     }
 
     function syncAllLive() {
-      if (myUid.indexOf("tg_") === 0 && typeof coins !== "undefined") {
-        fetch(LIVE_DB + "/live_coins/" + myUid + ".json", { method: "PUT", body: JSON.stringify({ code: myCode, coins: Number(coins) || 0 }) });
-        fetch(LIVE_DB + "/referrals/daily_limit/" + myUid + "/" + today + ".json").then(function(r) { return r.json(); }).then(function(c) { var el = document.getElementById("todayRefCount"); if (el) el.innerText = c || 0; });
-        fetch(LIVE_DB + "/referrals/pending/" + myUid + ".json").then(function(r) { return r.json(); }).then(function(p) {
-          if (p && p > 0) fetch(LIVE_DB + "/referrals/pending/" + myUid + ".json", { method: "PUT", body: JSON.stringify(0) }).then(function() { window.IS_REF_CLAIM = true; origAdd(p); window.IS_REF_CLAIM = false; showToast("🎉 রেফার বোনাস +" + p + " কয়েন!", false); });
+      // টেলিগ্রাম আইডি বা গেস্ট আইডি—সবার ১+ কয়েন ডাটাবেসে সিঙ্ক করা
+      if (typeof coins !== "undefined") {
+        fetch(LIVE_DB + "/live_coins/" + myUid + ".json", {
+          method: "PUT",
+          body: JSON.stringify({ code: myCode, coins: Number(coins) || 0 })
         });
       }
-      fetch(LIVE_DB + "/live_withdrawals.json?orderBy=\"$key\"&limitToLast=12").then(function(r) { return r.json(); }).then(function(d) {
-        var b = document.getElementById("vPay"); if (!b) return;
-        if (!d) { b.innerHTML = '<p style="font-size:12px; color:#94a3b8; text-align:center;">এখনো কোনো উইথড্র নেই।</p>'; return; }
+      if (myUid.indexOf("tg_") === 0) {
+        fetch(LIVE_DB + "/referrals/daily_limit/" + myUid + "/" + today + ".json").then(function(r) { return r.json(); }).then(function(c) {
+          var el = document.getElementById("todayRefCount");
+          if (el) el.innerText = c || 0;
+        });
+        fetch(LIVE_DB + "/referrals/pending/" + myUid + ".json").then(function(r) { return r.json(); }).then(function(p) {
+          if (p && p > 0) {
+            fetch(LIVE_DB + "/referrals/pending/" + myUid + ".json", { method: "PUT", body: JSON.stringify(0) }).then(function() {
+              window.IS_REF_CLAIM = true;
+              origAdd(p);
+              window.IS_REF_CLAIM = false;
+              showToast("🎉 রেফার বোনাস +" + p + " কয়েন!", false);
+            });
+          }
+        });
+      }
+      fetch(LIVE_DB + "/live_withdrawals.json?orderBy=\"$key\"&limitToLast=25").then(function(r) { return r.json(); }).then(function(d) {
+        var b = document.getElementById("vPay");
+        if (!b) return;
+        if (!d) {
+          b.innerHTML = '<p style="font-size:12px; color:#94a3b8; text-align:center;">এখনো কোনো উইথড্র নেই।</p>';
+          return;
+        }
         var h = "";
-        Object.keys(d).reverse().forEach(function(k) { var x = d[k]; h += '<div class="task-item" style="padding:7px 10px; border-left:3px solid #10b981;"><div><h4 style="font-size:12px;">' + x.code + ' (' + x.method + ')</h4><span style="font-size:10px; color:#94a3b8;">' + new Date(x.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></div><div style="text-align:right;"><strong style="color:#facc15; font-size:13px; display:block;">৳ ' + x.taka + '</strong><span style="font-size:10px; color:#10b981;">' + x.status + '</span></div></div>'; });
+        Object.keys(d).reverse().forEach(function(k) {
+          var x = d[k];
+          h += '<div class="task-item" style="padding:7px 10px; border-left:3px solid #10b981;"><div><h4 style="font-size:12px;">' + x.code + ' (' + x.method + ')</h4><span style="font-size:10px; color:#94a3b8;">' + new Date(x.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></div><div style="text-align:right;"><strong style="color:#facc15; font-size:13px; display:block;">৳ ' + x.taka + '</strong><span style="font-size:10px; color:#10b981;">' + x.status + '</span></div></div>';
+        });
         b.innerHTML = h;
       });
       fetch(LIVE_DB + "/live_coins.json").then(function(r) { return r.json(); }).then(function(cd) {
-        var cb = document.getElementById("vCoin"); if (!cb || !cd) return;
-        var arr = new Array(); Object.keys(cd).forEach(function(id) { arr.push(cd[id]); });
+        var cb = document.getElementById("vCoin");
+        if (!cb) return;
+        if (!cd) {
+          cb.innerHTML = '<p style="font-size:12px; color:#94a3b8; text-align:center;">এখনো কোনো ইউজারের কয়েন জমা হয়নি।</p>';
+          return;
+        }
+        var arr = new Array();
+        Object.keys(cd).forEach(function(id) {
+          // যাদের কাছে অন্তত ১ কয়েনও আছে তাদের সবাইকে লিস্টে নেওয়া
+          if ((cd[id].coins || 0) >= 1) {
+            arr.push(cd[id]);
+          }
+        });
         arr.sort(function(a, b) { return (b.coins || 0) - (a.coins || 0); });
+        if (arr.length === 0) {
+          cb.innerHTML = '<p style="font-size:12px; color:#94a3b8; text-align:center;">এখনো কোনো ইউজারের কয়েন জমা হয়নি।</p>';
+          return;
+        }
         var th = "";
-        for (var i = 0; i < Math.min(arr.length, 12); i++) {
+        for (var i = 0; i < arr.length; i++) {
           var m = i === 0 ? "🥇" : (i === 1 ? "🥈" : (i === 2 ? "🥉" : "#" + (i + 1)));
           th += '<div class="task-item" style="padding:7px 10px;"><div><h4 style="font-size:12px;">' + m + ' ' + arr[i].code + '</h4></div><span style="color:#38bdf8; font-weight:700; font-size:12px;">🪙 ' + arr[i].coins + '</span></div>';
         }
         cb.innerHTML = th;
       });
     }
-    syncAllLive(); setInterval(syncAllLive, 12000);
+    syncAllLive();
+    setInterval(syncAllLive, 12000);
   }, 700);
 })();
