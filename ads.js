@@ -190,34 +190,59 @@ setTimeout(function() {
       sc.innerHTML = '<div class="card-title" style="color:#10b981;">🎡 লাকি স্পিন হুইল (বাকি: <span id="spLeft">' + Math.max(0, 5 - usedSp) + '</span>/৫)</div><div style="position:relative; width:160px; height:160px; margin:10px auto;"><div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); font-size:20px; z-index:10; color:#facc15;">▼</div><div id="wCircle" style="width:160px; height:160px; border-radius:50%; border:5px solid #facc15; background:conic-gradient(#0284c7 0deg 60deg, #10b981 60deg 120deg, #8b5cf6 120deg 180deg, #e11d48 180deg 240deg, #d97706 240deg 300deg, #0d9488 300deg 360deg); display:flex; align-items:center; justify-content:center; transition:transform 3.5s ease-out;"><div style="width:50px; height:50px; border-radius:50%; background:#0b0f19; border:2px solid #facc15; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:#facc15;">SPIN</div></div></div><button type="button" class="btn btn-green" id="spBtn" ' + (usedSp >= 5 ? 'disabled style="background:#dc2626;"' : '') + '>' + (usedSp >= 5 ? '🔒 আজকের স্পিন শেষ' : '🎯 স্পিন করুন (৫-১৫ কয়েন)') + '</button>';
       gameTab.appendChild(sc);
 
-      var spinning = false;
-      var deg = 0;
-      var rw =;
+            var spinning = false, deg = 0, rw = new Array(5, 8, 10, 12, 15);
       document.getElementById("spBtn").onclick = function() {
         if (spinning || usedSp >= 5) return;
-        spinning = true;
-        var b = this;
-        b.disabled = true;
-        b.style.background = "#d97706";
-        b.innerText = "⏳ চাকা ঘুরছে...";
+        spinning = true; var b = this; b.disabled = true; b.style.background = "#d97706"; b.innerText = "⏳ চাকা ঘুরছে...";
         if (typeof runMonetagAd === "function") runMonetagAd();
         var win = rw[Math.floor(Math.random() * rw.length)];
         deg += 1440 + Math.floor(Math.random() * 360);
         document.getElementById("wCircle").style.transform = "rotate(" + deg + "deg)";
         setTimeout(function() {
-          usedSp++;
-          localStorage.setItem(spKey, usedSp);
-Object.keys(cd).forEach(function(id) { arr.push(cd[id]); });
-arr.sort(function(a, b) { return (b.coins || 0) - (a.coins || 0); });
-var th = "";
-for (var i = 0; i < Math.min(arr.length, 12); i++) {
-var m = i === 0 ? "🥇" : (i === 1 ? "🥈" : (i === 2 ? "🥉" : "#" + (i + 1)));
-th += '' + m + ' ' + arr[i].code + '🪙 ' + arr[i].coins + '';
-}
-cb.innerHTML = th;
-});
-}
-syncAllLive();
-setInterval(syncAllLive, 12000);
-}, 700);
+          usedSp++; localStorage.setItem(spKey, usedSp); addCoins(win);
+          showToast("🎉 +" + win + " কয়েন জিতেছেন!", false);
+          document.getElementById("spLeft").innerText = Math.max(0, 5 - usedSp); spinning = false;
+          if (usedSp >= 5) { b.style.background = "#dc2626"; b.innerText = "🔒 আজকের স্পিন শেষ"; }
+          else { b.disabled = false; b.style.background = "#10b981"; b.innerText = "🎯 স্পিন করুন (৫-১৫ কয়েন)"; }
+        }, 3600);
+      };
+    }
+
+    if (homeTab && !document.getElementById("realLeaderboardCard")) {
+      var lc = document.createElement("div"); lc.id = "realLeaderboardCard"; lc.className = "card"; lc.style.borderColor = "#38bdf8";
+      lc.innerHTML = '<div class="card-title" style="color:#38bdf8; display:flex; justify-content:space-between;"><span>🏆 লাইভ লিডারবোর্ড ও পেমেন্ট</span><span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px;">LIVE</span></div><div style="display:flex; gap:6px; margin-bottom:10px;"><button type="button" class="btn btn-sm" id="bPay" style="flex:1; background:#10b981;">💸 লাইভ উইথড্র</button><button type="button" class="btn btn-sm" id="bCoin" style="flex:1; background:#1e293b;">👑 টপ কয়েন</button></div><div id="vPay" style="max-height:200px; overflow-y:auto;"></div><div id="vCoin" style="display:none; max-height:200px; overflow-y:auto;"></div>';
+      homeTab.appendChild(lc);
+      document.getElementById("bPay").onclick = function() { document.getElementById("vPay").style.display = "block"; document.getElementById("vCoin").style.display = "none"; this.style.background = "#10b981"; document.getElementById("bCoin").style.background = "#1e293b"; };
+      document.getElementById("bCoin").onclick = function() { document.getElementById("vPay").style.display = "none"; document.getElementById("vCoin").style.display = "block"; this.style.background = "#f59e0b"; document.getElementById("bPay").style.background = "#1e293b"; };
+    }
+
+    function syncAllLive() {
+      if (myUid.indexOf("tg_") === 0 && typeof coins !== "undefined") {
+        fetch(LIVE_DB + "/live_coins/" + myUid + ".json", { method: "PUT", body: JSON.stringify({ code: myCode, coins: Number(coins) || 0 }) });
+        fetch(LIVE_DB + "/referrals/daily_limit/" + myUid + "/" + today + ".json").then(function(r) { return r.json(); }).then(function(c) { var el = document.getElementById("todayRefCount"); if (el) el.innerText = c || 0; });
+        fetch(LIVE_DB + "/referrals/pending/" + myUid + ".json").then(function(r) { return r.json(); }).then(function(p) {
+          if (p && p > 0) fetch(LIVE_DB + "/referrals/pending/" + myUid + ".json", { method: "PUT", body: JSON.stringify(0) }).then(function() { window.IS_REF_CLAIM = true; origAdd(p); window.IS_REF_CLAIM = false; showToast("🎉 রেফার বোনাস +" + p + " কয়েন!", false); });
+        });
+      }
+      fetch(LIVE_DB + "/live_withdrawals.json?orderBy=\"$key\"&limitToLast=12").then(function(r) { return r.json(); }).then(function(d) {
+        var b = document.getElementById("vPay"); if (!b) return;
+        if (!d) { b.innerHTML = '<p style="font-size:12px; color:#94a3b8; text-align:center;">এখনো কোনো উইথড্র নেই।</p>'; return; }
+        var h = "";
+        Object.keys(d).reverse().forEach(function(k) { var x = d[k]; h += '<div class="task-item" style="padding:7px 10px; border-left:3px solid #10b981;"><div><h4 style="font-size:12px;">' + x.code + ' (' + x.method + ')</h4><span style="font-size:10px; color:#94a3b8;">' + new Date(x.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></div><div style="text-align:right;"><strong style="color:#facc15; font-size:13px; display:block;">৳ ' + x.taka + '</strong><span style="font-size:10px; color:#10b981;">' + x.status + '</span></div></div>'; });
+        b.innerHTML = h;
+      });
+      fetch(LIVE_DB + "/live_coins.json").then(function(r) { return r.json(); }).then(function(cd) {
+        var cb = document.getElementById("vCoin"); if (!cb || !cd) return;
+        var arr = new Array(); Object.keys(cd).forEach(function(id) { arr.push(cd[id]); });
+        arr.sort(function(a, b) { return (b.coins || 0) - (a.coins || 0); });
+        var th = "";
+        for (var i = 0; i < Math.min(arr.length, 12); i++) {
+          var m = i === 0 ? "🥇" : (i === 1 ? "🥈" : (i === 2 ? "🥉" : "#" + (i + 1)));
+          th += '<div class="task-item" style="padding:7px 10px;"><div><h4 style="font-size:12px;">' + m + ' ' + arr[i].code + '</h4></div><span style="color:#38bdf8; font-weight:700; font-size:12px;">🪙 ' + arr[i].coins + '</span></div>';
+        }
+        cb.innerHTML = th;
+      });
+    }
+    syncAllLive(); setInterval(syncAllLive, 12000);
+  }, 700);
 })();
