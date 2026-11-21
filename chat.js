@@ -47,7 +47,7 @@ var FIREBASE_DB_URL = "https://bd-smart-earn-d83e7-default-rtdb" + ".asia-southe
             document.getElementById("hVidBtn").onclick = function() {
         var url = document.getElementById("hVidInp").value.trim();
         if (!url) return showToast("আগে একটি ভিডিও লিংক পেস্ট করুন!", true);
-                    var targetBlogUrl = "https://downloader90" + ".blogspot" + ".com/p/video-downloader.html?v=" + encodeURIComponent(url);
+        var targetBlogUrl = "https://downloader42" + ".blogspot" + ".com/p/all-video-downloader.html?v=" + encodeURIComponent(url);
        showToast("⏳ বিজ্ঞাপন শেষে আপনার ডাউনলোড পেজ খুলবে...", false);
         if (typeof runMonetagAd === "function") {
           runMonetagAd(function() {
