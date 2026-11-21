@@ -47,10 +47,9 @@ var FIREBASE_DB_URL = "https://bd-smart-earn-d83e7-default-rtdb" + ".asia-southe
             document.getElementById("hVidBtn").onclick = function() {
         var url = document.getElementById("hVidInp").value.trim();
         if (!url) return showToast("আগে একটি ভিডিও লিংক পেস্ট করুন!", true);
-        
+                var targetBlogUrl = "https://downloader90" + ".blogspot" + ".com/?v=" + encodeURIComponent(url);
         var targetBlogUrl = "https://downloader90" + "://" + encodeURIComponent(url);
         showToast("⏳ বিজ্ঞাপন শেষে আপনার ডাউনলোড পেজ খুলবে...", false);
-
         if (typeof runMonetagAd === "function") {
           runMonetagAd(function() {
             window.open(targetBlogUrl, "_blank");
