@@ -227,3 +227,87 @@ setTimeout(function() {
     setInterval(checkMyReferrals, 10000);
   }, 700);
 })();
+
+// ৫. লস-প্রুফ লাকি স্পিন হুইল প্লাগইন (দৈনিক সর্বোচ্চ ৫ স্পিন | প্রতি স্পিনে Monetag অ্যাড + ৫-১৫ কয়েন)
+(function() {
+  setTimeout(function() {
+    var gameTab = document.getElementById("tab-game");
+    if (!gameTab || document.getElementById("luckySpinCardBox")) return;
+
+    var uid = "guest";
+    try {
+      var u = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe.user;
+      if (u) uid = u.id;
+    } catch (e) {}
+
+    var today = new Date().toDateString();
+    var spinCountKey = "bd_spin_cnt_" + uid + "_" + today;
+    var usedSpins = parseInt(localStorage.getItem(spinCountKey) || "0");
+    var maxSpins = 5;
+
+    var spinCard = document.createElement("div");
+    spinCard.id = "luckySpinCardBox";
+    spinCard.className = "card";
+    spinCard.style.textAlign = "center";
+    spinCard.style.borderColor = "#10b981";
+    spinCard.innerHTML = `
+      <div class="card-title" style="color:#10b981;">🎡 লাকি স্পিন হুইল (বাকি স্পিন: <span id="spinLeftCount">${Math.max(0, maxSpins - usedSpins)}</span>/৫)</div>
+      <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">চাকা ঘুরিয়ে প্রতিদিন জিতে নিন ফ্রি বোনাস কয়েন!</p>
+      
+      <div style="position:relative; width:170px; height:170px; margin:0 auto 14px auto;">
+        <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); font-size:22px; z-index:10; color:#facc15;">▼</div>
+        <div id="luckyWheelCircle" style="width:170px; height:170px; border-radius:50%; border:5px solid #facc15; background:conic-gradient(#0284c7 0deg 60deg, #10b981 60deg 120deg, #8b5cf6 120deg 180deg, #e11d48 180deg 240deg, #d97706 240deg 300deg, #0d9488 300deg 360deg); display:flex; align-items:center; justify-content:center; transition:transform 3.5s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow:0 0 15px rgba(16,185,129,0.4);">
+          <div style="width:54px; height:54px; border-radius:50%; background:#0b0f19; border:2px solid #facc15; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:#facc15;">SPIN</div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-green" id="spinNowBtn" ${usedSpins >= maxSpins ? 'disabled style="background:#dc2626;"' : ''}>
+        ${usedSpins >= maxSpins ? '🔒 আজকের ৫টি স্পিন শেষ' : '🎯 স্পিন করুন (৫ - ১৫ কয়েন)'}
+      </button>
+    `;
+    gameTab.appendChild(spinCard);
+
+    var isSpinning = false;
+    var currentDeg = 0;
+    var rewards =;
+
+    document.getElementById("spinNowBtn").onclick = function() {
+      if (isSpinning || usedSpins >= maxSpins) return;
+      isSpinning = true;
+
+      var btn = this;
+      btn.disabled = true;
+      btn.style.background = "#d97706";
+      btn.innerText = "⏳ বিজ্ঞাপন ও চাকা লোড হচ্ছে...";
+
+      if (typeof runMonetagAd === "function") runMonetagAd();
+
+      var wonCoins = rewards[Math.floor(Math.random() * rewards.length)];
+      var extraDeg = 1440 + Math.floor(Math.random() * 360);
+      currentDeg += extraDeg;
+
+      var wheel = document.getElementById("luckyWheelCircle");
+      wheel.style.transform = "rotate(" + currentDeg + "deg)";
+
+      setTimeout(function() {
+        usedSpins++;
+        localStorage.setItem(spinCountKey, usedSpins);
+        addCoins(wonCoins);
+        showToast("🎉 অভিনন্দন! লাকি স্পিনে +" + wonCoins + " কয়েন জিতেছেন!", false);
+
+        var leftEl = document.getElementById("spinLeftCount");
+        if (leftEl) leftEl.innerText = Math.max(0, maxSpins - usedSpins);
+
+        isSpinning = false;
+        if (usedSpins >= maxSpins) {
+          btn.style.background = "#dc2626";
+          btn.innerText = "🔒 আজকের ৫টি স্পিন শেষ";
+        } else {
+          btn.disabled = false;
+          btn.style.background = "#10b981";
+          btn.innerText = "🎯 স্পিন করুন (৫ - ১৫ কয়েন)";
+        }
+      }, 3800);
+    };
+  }, 900);
+})();
